@@ -1,24 +1,29 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addTodo } from "../../features/todos/todoSlice";
-
-
+import {
+  addAsyncTodos,
+  addTodo,
+  getAsyncTodos,
+} from "../../features/todos/todoSlice";
 
 const AddTodoForm = () => {
   const [value, setValue] = useState("");
   const dispatch = useDispatch();
-
-  // const { todos } = useSelector((state) => state.todos);
-
+  const { loading } = useSelector((state) => state.todos);
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!value) return;
-    dispatch(addTodo({ title: value }));
+    dispatch(addAsyncTodos({ id: Date.now(), title: value, completed: false }));
     setValue("");
   };
 
   return (
-    <form className={`form-inline mt-3 mb-4 `} onSubmit={handleSubmit}>
+    <form
+      className={`form-inline mt-3 mb-4 ${
+        loading ? "opacity-50" : "opacity-100"
+      }`}
+      onSubmit={handleSubmit}
+    >
       <label htmlFor="name" className="mb-1">
         Name
       </label>
@@ -31,8 +36,8 @@ const AddTodoForm = () => {
         value={value}
         onChange={(event) => setValue(event.target.value)}
       />
-      <button type="submit" className="btn btn-primary mt-1">
-        Submit
+      <button disabled={loading} type="submit" className="btn btn-primary mt-1">
+        {loading ? "Submitting..." : "Submit"}
       </button>
     </form>
   );
